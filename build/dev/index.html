@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html ng-app="example366">
+<head>
+	<meta charset="utf-8" />
+	<title>Заголовок</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="app.css">
+    <!--<script src="http://code.angularjs.org/1.2.0rc1/angular.js"></script>-->
+    <script src="libs.js"></script>
+    <!--<script src="http://code.angularjs.org/1.2.0rc1/angular-animate.min.js"></script>
+    <script src="http://code.angularjs.org/1.2.0rc1/angular-touch.min.js"></script>-->
+    <script src="app.js"></script>
+</head>
+<body ng-controller="MainCtrl as mc" class="">    
+<button type="button" class="btn btn-primary btn-lg printS" data-toggle="modal" data-target="#myModal" ng-click="mc.InitSetup()">
+  сделать рассчет
+</button>
+    <!-- slider container -->
+    <div class="modal fade form-calc printSelection" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg printSelection">
+            <div class="modal-content printSelection">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></span>
+                </button>
+				<div class="modal-body">
+                <div class="container-fluid form-serie">
+                    <div class="row">
+                    <form novalidate class="css-form" id="myForm" name="calculator" ng-submit="send()">
+                        
+                       
+                            <div ng-show="mc.step1">
+                                <div class="panel-footer client-type">
+                                    <div class="panel-heading">
+                                        <div class="col-md-5">
+                                            <label for="priv" ng-click="mc.inputMeters(user.type)">
+                                                <input type="radio" id="priv" checked ng-model="user.type" value="0">
+                                                <span class="glyphicon glyphicon-unchecked" aria-hidden="true">                       
+                                                </span>
+                                                <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+                                                Частные лица                                        
+                                            </label>
+                                        </div>
+                                        <div class="col-md-7">                                    
+                                            <label for="jur" ng-click="mc.inputMeters(user.type)">
+                                                <input type="radio" id="jur" ng-model="user.type" value="1">
+                                                <span class="glyphicon glyphicon-unchecked" aria-hidden="true">                       
+                                                </span>
+                                                <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+                                                Юридические лица                                        
+                                            </label>                                        
+                                        </div>
+                                    </div>                            
+                                </div>
+                                <div class="col-md-5 form-part">
+                                    <div class="panel panel-default">                                        
+                                        <div class="panel-heading">1. Выберите параметры</div>                                        
+                                        <div class="panel-body form-inline form-selects">
+                                            <div class="form-group">
+                                                <label for="">Выберите серию дома</label>
+                                                <div custom-select="s.id as s.name for s in ddSelectOptions | filter: { name: $searchTerm }" ng-model="ddSelectSelected" class="btn-group bootstrap-sel"></div>										
+												<!--<div dropdown-select="ddSelectOptions"
+													dropdown-model="ddSelectSelected">
+												</div> -->
+                                            </div>
+                                            <div class="form-group" ng-show="mc.forJuridical">
+                                                <label for="">Выберите количество комнат</label>
+                                                <div dropdown-select="ddRooms" dropdown-model="ddRoomSelected" class="btn-group bootstrap-sel"></div>                                     
+                                            </div>
+                                           
+                                            <div class="form-group" ng-show="mc.forJuridical">
+                                                <label for="">Выберите расположение</label>
+                                                <div dropdown-select="ddDisloc" dropdown-model="ddDislocSelected" class="btn-group bootstrap-sel"></div>                                     
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="">Выберите этаж</label>
+                                                <div dropdown-select="ddStear" dropdown-model="ddStearSelected" class="btn-group bootstrap-sel"></div>  
+                                            </div>
+                                            <div class="form-group" ng-show="!mc.forJuridical">
+                                                <label for="">Объем работ погонных метрах</label>
+                                                <input ng-model="mc.meters" type="text" class="form-control number_dots" placeholder="от 30 до 3000 м"> 
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="">Вид герметизации</label>                                            
+                                            <div dropdown-select="hermSelect"
+                                                    dropdown-model="hermSelectOpt">
+                                                </div>
+                                            </div>
+                                            <div class="well online-calc">
+                                                <h5>Оналайн расчет цены</h5>                                                                                         
+                                                    <span>{{mc.OnlineCalc.name}},&nbsp;</span>                                          
+                                                    <span ng-show="mc.forJuridical">{{mc.OnlineCalc.rooms}},&nbsp;</span>                                          
+                                                                                         
+                                                    <span ng-show="mc.forJuridical">{{mc.OnlineCalc.stear}},&nbsp;</span> 
+                                                    <span>{{mc.OnlineCalc.meters}},&nbsp;</span>                                       
+                                                    <span>{{mc.OnlineCalc.herm}}</span>  
+                                                    <div class="price-wrap">                                  
+                                                        <div class="price-over">{{mc.OnlineCalc.price}}</div>
+                                                    </div> 
+                                                   <!--<div target="_blank" class="print" ng-show="mc.showPrint" data-toggle="modal" data-target="#myModal2"><span class="glyphicon glyphicon-print" aria-hidden="true"></span></div>-->                             
+                                            </div>
+                                        </div><!-- end of panel body -->
+                                        <div class="panel-footer">
+                                            <div>
+                                                <button type="button" class="btn btn-default" ng-click="mc.calculatePrice()">Рассчитать</button>
+                                                <button type="button" class="btn btn-default" ng-show="mc.showPrint" data-toggle="modal" data-target="#myModal2">Распечатать</button>
+                                            </div>
+                                            <button type="button" class="btn btn-lg" ng-click="mc.NextStep()">Подготовить заявку</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7 form-part left-part">
+                                    <div class="panel panel-default">                                        
+                                        <div class="panel-heading">2. Выберите серию дома</div>
+                                        <div class="panel-body">                                            
+                                            <div class="container slider">
+                                                <ul class="nav">
+                                                    <li  ng-class="{'active':mc.isActive(-1)}" ng-show="mc.isShow(-1)">
+                                                        <img ng-src="{{mc.LastPhoto.src}}" alt="{{mc.LastPhoto.name}}" title="{{mc.LastPhoto.name}}" ng-click="mc.showPhoto(104);" />
+                                                    </li>
+                                                    <li ng-repeat="photo in mc.photos" ng-class="{'active':mc.isActive($index)}" ng-show="mc.isShow($index)">
+                                                        <img ng-src="{{mc.smallPhoto(photo.src)}}" alt="{{photo.name}}" title="{{photo.name}}" ng-click="mc.showPhoto($index);" />
+                                                    </li>
+                                                    <li  ng-class="{'active':mc.isActive(mc.len)}" ng-show="mc.isShow(mc.last)">
+                                                        <img ng-src="{{mc.FirstPhoto.src}}" alt="{{mc.FirstPhoto.name}}" title="{{mc.FirstPhoto.name}}" ng-click="mc.showPhoto(0);" />
+                                                    </li>
+                                                </ul>
+                                                <!-- enumerate all photos -->
+                                                <label 
+                                                class="slide-over     slide" 
+                                                for="id{{$index}}" 
+                                                ng-repeat="photo in mc.photos" 
+                                                ng-show="mc.isActive($index)" 
+                                                ng-swipe-left="mc.showNext()" 
+                                                ng-swipe-right="mc.showPrev()">
+                                                <!--<label class="slider">-->
+                                                
+                                                <img  class="slide-in"    ng-src="{{photo.src}}" ng-show="mc.isActive($index)" ng-swipe-left="mc.showNext()" ng-swipe-right="mc.showPrev()" ng-click="mc.seletSerie($index)"/>
+                                                <!--<input type="radio" id="id{{$index}}" value="{{photo.name}}" name="serie">-->
+                                                <p>{{photo.descr}}</p>
+                                                </label>
+
+                                                <!-- prev / next controls -->
+												<div class="arrows-wrapper">
+													<a class="arrow prev" href="#" ng-click="mc.showPrev()"></a>
+													<a class="arrow next" href="#" ng-click="mc.showNext()"></a>
+												</div>
+                                                
+
+                                                <!-- extra navigation controls -->
+                                                
+
+                                            </div>
+                                        </div>
+                                    </div><!-- end of panel -->
+                                </div>
+                                <div class="phone-call">Вы всегда можете нам позвонить по тел. +7 (495) 585-79-00</div>
+                            </div><!-- end of ng-show step1-->
+                            <div ng-show="mc.step2" class="step2">
+                                <div class="col-md-12 form-part">
+                                    <div class="panel">
+                                        <div class="panel-footer" >
+                                            <span ng-repeat="choosParam in mc.finalPanel" class="select-params">{{choosParam}}</span>
+                                            
+                                        </div>
+                                        <div class="panel-body form-inline form-data">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Ваш емайл</label>
+                                                <input type="email" class="form-control" placeholder="емайл" ng-model="mc.clientEmail" required name="email">
+                                                <div class="error" ng-show="calculator.email.$touched && calculator.email.$invalid">
+                                                    <div class="error-in">Введите ваш емайл</div>
+                                                </div>                                                
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleInputPassword1">Ваше имя</label>
+                                                <input type="text " class="form-control" id="exampleInputPassword1" placeholder="имя" ng-model="mc.clientName">
+                                            </div> 
+                                            <div class="form-group">
+                                                <label for="exampleInputPassword1">Ваш телефон</label>
+                                                <input type="text" class="form-control" id="exampleInputPassword1" ui-mask="+7 (999) 999-9999" ng-model="mc.phonenumber">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Введите ваше сообщение</label>
+                                                <textarea name="" ng-model="mc.message" cols="30" rows="10" class="form-control"></textarea>
+                                            </div>  
+                                        </div>
+                                            <div class="panel-footer">                         
+                                                  <button  class="btn btn-default" ng-click="mc.PrevStep()">Назад</button>
+                                                  <button type="submit" class="btn btn-lg" ng-disabled="calculator.email.$invalid" ng-class="{'disabled' : calculator.email.$invalid}">Отправить заявку</button>
+                                            </div>
+                                                                                    
+                                  </div>
+                                </div>
+                                <div class="phone-call">Вы всегда можете нам позвонить по тел. +7 (495) 585-79-00</div>
+                            </div><!-- end of ng-show step2 -->
+                            <div ng-show="mc.step3" class="step3">
+                                <div class="col-md-12 form-part">
+                                    <div class="panel last">
+                                        <div class="panel-body">
+                                            <div class="h3">Спасибо за вашу заявку!</div>
+                                            <div class="h3">Мы свяжемся с вами в самое ближайшее время</div>
+                                        </div>
+                                        <div class="panel-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+				</div>
+        </div>
+    </div>
+   </div><!-- end of modal 1 -->
+    <div class="modal2 modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content printSelected" id="printer">
+          <div class="modal-header">
+            <button type="button" class="close printSelection" data-dismiss="modal2" aria-label="Close"><span aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></span></button>
+            <div class="header">
+                <img src="images/logo.png" alt="logo" class="logo">
+                <div class="requisites">
+                    <div>ООО «АссолЪ» ИНН/КПП: 7710949692 / 771001001, ОГРН: 1137746957886</div>
+                    <div>р/с: 40702810638120011759 в ОАО "Сбербанк России" г.Москва;</div>
+                    <div>корр. счет: 30101810400000000225; БИК: 044525225</div>
+                    <div>Адрес: 123001, г. Москва, Трехпрудный пер., д. 11/13, стр. 2</div>
+                    <div>тел. +7 (495) 585-79-00, Сайт компании http://www.promalpservice.ru/germ.html</div>
+                </div>          
+            </div>
+          </div>
+          <div class="modal-body">
+            <h1>АссолЪ</h1>
+                <h2>Герметизация межпанельных швов</h2>
+                <h3>Расчет № {{mc.OnlineCalc.orderNumber }}</h3>
+                <h3>от {{mc.OnlineCalc.date}}</h3>
+                <table>
+                    <tr>
+                        <th>Название параметра</th>
+                        <th>Выбранный параметр</th>
+                        <th>Кол-во</th>
+                        <th>Цена</th>
+                        <th>Сумма</th>
+                    </tr>
+                    <tr>
+                        <td>Типовая серия дома </td>
+                        <td>{{mc.OnlineCalc.name}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr ng-show="mc.forJuridical">
+                        <td>Количество комнат</td>
+                        <td>{{ddRoomSelected.name}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr ng-show="mc.forJuridical">
+                        <td>Этаж</td>
+                        <td>{{ddStearSelected.name}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr ng-show="mc.forJuridical">
+                        <td>Расположение</td>
+                        <td>{{ddDislocSelected.name}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Вид герметизации</td>
+                        <td>{{hermSelectOpt.name}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Итого</td>
+                        <td>Пог.м</td>
+                        <td>{{mc.meters}}</td>
+                        <td>{{mc.OnlineCalc.pricePerMetr}}</td>
+                        <td>{{mc.OnlineCalc.price}}</td>
+                    </tr>
+                </table>
+                <div class="usetime">Расчет действителен к оплате до 07.11.2015</div>
+                <!--<a href="#" onClick="window.print()"  target="_blank" class="print">Распечатать</a> -->
+                <!--<a href="#" onClick="printNewWin()"  target="_blank" class="print">Распечатать</a> -->
+                <div class="footer">Этот расчет сохранен в нашей базе 1С. Вы можете обратиться к нам в офис и по номеру расчета откорректировать и оплатить счет. </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            <button type="button" class="btn btn-primary print" onClick="printNewWin()">Распечатать</button>
+          </div>
+        </div>
+      </div>
+    </div>
+   <script>
+   (function($) {
+
+       $('.selectpicker').selectpicker();
+
+       $('.number_dots').on('input', function(){
+             this.value = this.value.replace(/^\.|[^\d\.]|\.(?=.*\.)|^0+(?=\d)/g, '');
+         });
+      $('#myModal2 .close').click( function() {$('#myModal2').modal('hide');})
+
+})(jQuery);
+    </script>
+    <script type="text/javascript"> 
+<!-- 
+function printNewWin(){
+pr = document.getElementById('printer').innerHTML;  
+newWin=window.open('','printWindow','Toolbar=0,Location=0,Directories=0,Status=0,Menubar=0,Scrollbars=0,Resizable=0'); 
+newWin.document.open(); 
+newWin.document.write(pr); 
+newWin.document.close();
+newWin.print(); }
+
+// --> 
+</script> 
+
+</body>
+</html>
